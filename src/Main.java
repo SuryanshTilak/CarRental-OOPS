@@ -2,7 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-class Car {
+// Abstract Car class
+abstract class Car {
     private String carId;
     private String brand;
     private String model;
@@ -16,6 +17,7 @@ class Car {
         this.basePricePerDay = basePricePerDay;
         this.isAvailable = true;
     }
+
     public String getCarId() {
         return carId;
     }
@@ -28,8 +30,8 @@ class Car {
         return model;
     }
 
-    public double calculatePrice(int rentalDays) {
-        return basePricePerDay * rentalDays;
+    public double getBasePricePerDay() {
+        return basePricePerDay;
     }
 
     public boolean isAvailable() {
@@ -43,8 +45,44 @@ class Car {
     public void returnCar() {
         isAvailable = true;
     }
+
+    // Abstract method to calculate rental price
+    public abstract double calculatePrice(int rentalDays);
 }
 
+// LuxuryCar class
+class LuxuryCar extends Car {
+    private double luxuryTax;
+
+    public LuxuryCar(String carId, String brand, String model, double basePricePerDay, double luxuryTax) {
+        super(carId, brand, model, basePricePerDay);
+        this.luxuryTax = luxuryTax;
+    }
+
+    @Override
+    public double calculatePrice(int rentalDays) {
+        double basePrice = getBasePricePerDay() * rentalDays;
+        return basePrice + luxuryTax; // Add luxury tax
+    }
+}
+
+// SUVCar class
+class SUVCar extends Car {
+    private double offRoadFee;
+
+    public SUVCar(String carId, String brand, String model, double basePricePerDay, double offRoadFee) {
+        super(carId, brand, model, basePricePerDay);
+        this.offRoadFee = offRoadFee;
+    }
+
+    @Override
+    public double calculatePrice(int rentalDays) {
+        double basePrice = getBasePricePerDay() * rentalDays;
+        return basePrice + offRoadFee; // Add off-road fee
+    }
+}
+
+// Customer class
 class Customer {
     private String customerId;
     private String name;
@@ -63,6 +101,7 @@ class Customer {
     }
 }
 
+// Rental class
 class Rental {
     private Car car;
     private Customer customer;
@@ -87,6 +126,7 @@ class Rental {
     }
 }
 
+// CarRentalSystem class
 class CarRentalSystem {
     private List<Car> cars;
     private List<Customer> customers;
@@ -110,7 +150,6 @@ class CarRentalSystem {
         if (car.isAvailable()) {
             car.rent();
             rentals.add(new Rental(car, customer, days));
-
         } else {
             System.out.println("Car is not available for rent.");
         }
@@ -127,7 +166,6 @@ class CarRentalSystem {
         }
         if (rentalToRemove != null) {
             rentals.remove(rentalToRemove);
-
         } else {
             System.out.println("Car was not rented.");
         }
@@ -237,18 +275,17 @@ class CarRentalSystem {
 
         System.out.println("\nThank you for using the Car Rental System!");
     }
-
 }
-public class Main{
+
+// Main class
+public class CarRental {
     public static void main(String[] args) {
         CarRentalSystem rentalSystem = new CarRentalSystem();
 
-        Car car1 = new Car("C001", "Toyota", "Camry", 60.0); // Different base price per day for each car
-        Car car2 = new Car("C002", "Honda", "Accord", 70.0);
-        Car car3 = new Car("C003", "Mahindra", "Thar", 150.0);
+        Car car1 = new LuxuryCar("C001", "Toyota", "Camry", 60.0, 50.0); // LuxuryCar with extra luxury tax
+        Car car2 = new SUVCar("C002", "Honda", "Accord", 70.0, 20.0); // SUVCar with off-road fee
         rentalSystem.addCar(car1);
         rentalSystem.addCar(car2);
-        rentalSystem.addCar(car3);
 
         rentalSystem.menu();
     }
